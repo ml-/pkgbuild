@@ -1,0 +1,49 @@
+# Maintainer: ml <ml@visu.li>
+pkgname=golang-project
+pkgver=1.2.3
+pkgrel=1
+pkgdesc='My golang description'
+arch=('x86_64' 'aarch64' 'arm' 'armv6h' 'armv7h')
+url='https://github.com/example/project'
+license=('Apache')
+# grep -rF exec.Command
+depends=('glibc')
+makedepends=('go' 'gzip')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('fef697c982a08a797ebe9cece5abec772001c63cbe2b4fcacaf06bf510e98c87')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  go mod download
+}
+
+build() {
+  # illegal packaging technique: pulling commit hash from archive
+  local commit=
+  commit=$(zcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
+
+  local -a x=(
+    main.Commit="${commit:?}"
+    main.Version="v${pkgver}"
+  )
+  cd "${pkgname}-${pkgver}"
+  # enforce CGO_ENABLED=1 so the build does not break for AUR users having CGO_ENABLED=0
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  go build -o ${pkgname} -ldflags "${x[*]/#/-X=}"
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  #go test -short ./...
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 ${pkgname} -t "${pkgdir}/usr/bin"
+  #install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

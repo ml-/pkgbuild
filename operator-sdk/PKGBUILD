@@ -1,0 +1,53 @@
+# Maintainer: ml <ml@visu.li>
+pkgname=operator-sdk
+pkgver=0.18.0
+pkgrel=1
+pkgdesc='SDK for building Kubernetes applications'
+arch=('x86_64' 'aarch64')
+url='https://github.com/operator-framework/operator-sdk'
+license=('Apache')
+depends=('glibc')
+makedepends=('go' 'gzip' 'git')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('408a03a65ccc2700735c0a21540531b9fc3e1d669a612b707face640209bfc57')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  go mod download
+}
+
+build() {
+  local commit=
+  commit=$(zcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
+
+  cd "${pkgname}-${pkgver}"
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+
+  # grab k8s version from Makefile
+  [[ $(<Makefile) =~ K8S_VERSION[\ =]+(v[[:digit:].]+) ]] # sets BASH_REMATCH
+  local -a x=(
+    GitCommit="${commit:?}"
+    GitVersion="v${pkgver}"
+    KubernetesVersion="${BASH_REMATCH[1]}"
+  )
+  #echo "${x[@]@A}"
+  go build -o "${pkgname}" -ldflags "${x[*]/#/-X=github.com/operator-framework/operator-sdk/version.}" ./cmd/"${pkgname}"
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  local -a test_pkgs=()
+  test_pkgs=($(go list ./...))
+  # test everything except e2e
+  go test -short ${test_pkgs[@]##github.com/operator-framework/operator-sdk/test/*}
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 ${pkgname} -t "${pkgdir}/usr/bin"
+}
