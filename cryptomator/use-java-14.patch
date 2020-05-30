@@ -1,0 +1,12 @@
+diff -ura package.orig/main/buildkit/src/main/resources/launcher-linux.sh package.new/main/buildkit/src/main/resources/launcher-linux.sh
+--- package.orig/main/buildkit/src/main/resources/launcher-linux.sh	2020-05-30 03:20:59.129067495 +0200
++++ package.new/main/buildkit/src/main/resources/launcher-linux.sh	2020-05-30 03:23:08.503212317 +0200
+@@ -1,6 +1,7 @@
+ #!/bin/sh
++PATH="/usr/lib/jvm/java-14-openjdk/bin:${PATH}"
+ java \
+-	-cp "libs/*" \
++	-cp "/opt/cryptomator/libs/*" \
+ 	-Dcryptomator.settingsPath="~/.config/Cryptomator/settings.json" \
+ 	-Dcryptomator.ipcPortPath="~/.config/Cryptomator/ipcPort.bin" \
+ 	-Dcryptomator.logDir="~/.local/share/Cryptomator/logs" \
