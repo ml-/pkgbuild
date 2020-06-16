@@ -1,8 +1,8 @@
 # Maintainer: ml <ml@visu.li>
 # Contributor: Ivan Porto Carrero <ivan@flanders.co.nz> (@casualjim)
 pkgname=go-swagger
-pkgver=0.23.0
-pkgrel=2
+pkgver=0.24.0
+pkgrel=1
 pkgdesc="Toolkit for swagger in golang (go-swagger)"
 arch=('x86_64' 'i686' 'aarch64' 'armv6h' 'armv7h')
 groups=('swagger')
@@ -12,8 +12,8 @@ url="https://goswagger.io"
 license=('Apache')
 depends=('glibc')
 makedepends=('git' 'go')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/go-swagger/go-swagger/archive/v${pkgver}.tar.gz")
-sha256sums=('853ff265318249d0bbb4a4df68ade5ea1d8d0202c98f4796deb28ab2ca2fc758')
+source=("https://github.com/go-swagger/go-swagger/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('463cac52dffc606add5724e76614e2d8432094d43c34e6d5161caa846f33536f')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
