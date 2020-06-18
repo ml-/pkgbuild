@@ -1,12 +1,16 @@
 # pkgbuild
 
-PKGBUILDs for projects that are/were bin-blocked by other AUR maintainers.
-
 [PKGBUILD templates](./.pkgbuild-templates)
+
+---
+
+- [Packaging](#packaging)
+  - [Github and the `${pkgname}-${pkgver}.tar.gz::` source format](#github-and-the-pkgname-pkgvertargz-source-format)
+  - [Commit id from Git source archives](#commit-id-from-git-source-archives)
 
 ## Packaging
 
-### Github releases and the `${pkgname}-${pkgver}.tar.gz::` source format
+### Github and the `${pkgname}-${pkgver}.tar.gz::` source format
 
 Github supports the URL pattern `/org/project/archive/v1.2.3/project-v1.2.3.tar.gz`
 
