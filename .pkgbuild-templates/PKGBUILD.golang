@@ -8,7 +8,7 @@ url='https://github.com/example/project'
 license=('Apache')
 # grep -rF exec.Command
 depends=('glibc')
-makedepends=('go' 'gzip')
+makedepends=('go')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
 sha256sums=('fef697c982a08a797ebe9cece5abec772001c63cbe2b4fcacaf06bf510e98c87')
 
@@ -20,7 +20,7 @@ prepare() {
 build() {
   # illegal packaging technique: pulling commit hash from archive
   local commit=
-  commit=$(zcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
+  commit=$(bsdcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
 
   local -a x=(
     main.Commit="${commit:?}"
