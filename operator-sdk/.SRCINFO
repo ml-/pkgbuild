@@ -1,6 +1,6 @@
 pkgbase = operator-sdk
 	pkgdesc = SDK for building Kubernetes applications
-	pkgver = 0.18.1
+	pkgver = 0.18.2
 	pkgrel = 1
 	url = https://github.com/operator-framework/operator-sdk
 	arch = x86_64
@@ -9,8 +9,8 @@ pkgbase = operator-sdk
 	makedepends = go
 	makedepends = git
 	depends = glibc
-	source = operator-sdk-0.18.1.tar.gz::https://github.com/operator-framework/operator-sdk/archive/v0.18.1.tar.gz
-	sha256sums = 33680b9236ea7da51cb7b165dc624b512f04e3e9a2bf592101bfc3b312e340f8
+	source = operator-sdk-0.18.2.tar.gz::https://github.com/operator-framework/operator-sdk/archive/v0.18.2.tar.gz
+	sha256sums = 7ade9ec6b2d9a54c98f17de587ac58f0d3507a3a5055ca8918250d93062d8c68
 
 pkgname = operator-sdk
 
