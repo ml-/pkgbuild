@@ -1,7 +1,7 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=go-jira
 pkgver=1.0.23
-pkgrel=1
+pkgrel=2
 pkgdesc='simple jira command line client in Go'
 arch=('x86_64' 'i686')
 url='https://github.com/go-jira/jira'
@@ -35,4 +35,7 @@ package() {
   # completion script generation returns 1 for a some reason
   ./${_bin} --completion-script-bash | install -Dm644 /dev/stdin -T "${pkgdir}/usr/share/bash-completion/completions/jira" 
   ./${_bin} --completion-script-zsh | install -Dm644 /dev/stdin -T "${pkgdir}/usr/share/zsh/site-functions/_jira"
+
+  # useful README.md
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
 }
