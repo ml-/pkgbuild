@@ -9,9 +9,8 @@ license=('Apache')
 # grep -rF exec.Command
 depends=('glibc')
 makedepends=('go')
-source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-# for Github
-#source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+#source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
 sha256sums=('fef697c982a08a797ebe9cece5abec772001c63cbe2b4fcacaf06bf510e98c87')
 
 prepare() {

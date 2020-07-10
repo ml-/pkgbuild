@@ -1,0 +1,50 @@
+# Maintainer: ml <ml@visu.li>
+# Contributor: Lukas Zimmermann <luk.zim91 at gmail dot com> 
+pkgname=docker-ls
+pkgver=0.3.2
+pkgrel=2
+pkgdesc='Tools for browsing and manipulating docker registries'
+url='https://github.com/mayflower/docker-ls'
+license=('MIT')
+arch=('x86_64' 'i686')
+depends=('glibc')
+makedepends=('go')
+provides=('docker-rm')
+source=("https://github.com/mayflower/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('aa26657ca6271456ee9944ac4f18f25ff1593e7a85e7da6156c907681e342478')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  [[ -f go.mod ]] || go mod init github.com/mayflower/docker-ls
+  go mod tidy
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  go build ./cli/docker-ls
+  go build ./cli/docker-rm
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  go test ./...
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  local HOME
+  # do not load ~/.docker-ls.yaml
+  HOME=/dev/null
+  for cmd in docker-{ls,rm}; do
+    ./"$cmd" autocomplete bash | install -Dm644 /dev/stdin "${pkgdir}/usr/share/bash-completion/completions/${cmd}"
+    ./"$cmd" autocomplete zsh | install -Dm644 /dev/stdin "${pkgdir}/usr/share/zsh/site-functions/_${cmd}"
+    install -Dm755 "$cmd" -t "${pkgdir}/usr/bin"
+  done
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

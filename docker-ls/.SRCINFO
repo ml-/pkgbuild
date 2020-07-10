@@ -1,0 +1,16 @@
+pkgbase = docker-ls
+	pkgdesc = Tools for browsing and manipulating docker registries
+	pkgver = 0.3.2
+	pkgrel = 2
+	url = https://github.com/mayflower/docker-ls
+	arch = x86_64
+	arch = i686
+	license = MIT
+	makedepends = go
+	depends = glibc
+	provides = docker-rm
+	source = https://github.com/mayflower/docker-ls/archive/v0.3.2/docker-ls-0.3.2.tar.gz
+	sha256sums = aa26657ca6271456ee9944ac4f18f25ff1593e7a85e7da6156c907681e342478
+
+pkgname = docker-ls
+
