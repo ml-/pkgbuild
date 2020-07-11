@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=operator-sdk
-pkgver=0.18.2
+pkgver=0.19.0
 pkgrel=1
 pkgdesc='SDK for building Kubernetes applications'
 arch=('x86_64' 'aarch64')
@@ -8,8 +8,8 @@ url='https://github.com/operator-framework/operator-sdk'
 license=('Apache')
 depends=('glibc')
 makedepends=('go' 'git')
-source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-sha256sums=('7ade9ec6b2d9a54c98f17de587ac58f0d3507a3a5055ca8918250d93062d8c68')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('0d9e7933de0990b6eaf23f35f401f193be94e517db4ce46d782d9e6481582aad')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
