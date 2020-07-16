@@ -1,0 +1,49 @@
+# Maintainer: ml <ml@visu.li>
+pkgname=chart-testing
+pkgver=3.0.0_rc.1
+_pkgtag=${pkgver/_/-}
+pkgrel=1
+pkgdesc='CLI tool for linting and testing Helm charts'
+arch=('x86_64' 'aarch64' 'armv6h')
+url='https://github.com/helm/chart-testing'
+license=('Apache')
+depends=('glibc')
+makedepends=('git' 'go')
+source=("${url}/archive/v${_pkgtag}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('244abcb439a569f09f3233eaaae40e3fad5cc767c29bc3ee95a10a5c780dcfa8')
+
+prepare() {
+  cd "${pkgname}-${_pkgtag}"
+  go mod download
+}
+
+build() {
+  local commit=
+  commit=$(bsdcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
+  local -a x=(
+    BuildDate="$(TZ=UTC printf '%(%FT%T)TZ' ${SOURCE_DATE_EPOCH})"
+    GitCommit="${commit:?}"
+    Version="v${pkgver}"
+  )
+  cd "${pkgname}-${_pkgtag}"
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  go build -o bin/ct -ldflags "${x[*]/#/-X=github.com/helm/chart-testing/v3/ct/cmd.}" ./ct
+}
+
+check() {
+  cd "${pkgname}-${_pkgtag}"
+  go test -short ./...
+}
+
+package() {
+  cd "${pkgname}-${_pkgtag}"
+  install -Dm755 bin/ct -t "${pkgdir}/usr/bin"
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -a doc -t "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -a examples -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
