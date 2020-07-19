@@ -1,17 +1,17 @@
 pkgbase = cryptomator
 	pkgdesc = Multiplatform transparent client-side encryption of your files in the cloud.
 	pkgver = 1.5.5
-	pkgrel = 1
+	pkgrel = 2
 	url = https://cryptomator.org/
 	arch = any
 	license = GPL3
 	makedepends = jdk14-openjdk
 	makedepends = maven
 	depends = bash
-	depends = jre14-openjdk
+	depends = java-openjfx>=14
 	depends = fuse2
-	source = cryptomator-1.5.5.tar.gz::https://github.com/cryptomator/cryptomator/archive/1.5.5.tar.gz
-	source = cryptomator-linux-1.5.5.tar.gz::https://github.com/cryptomator/cryptomator-linux/archive/1.5.5.tar.gz
+	source = https://github.com/cryptomator/cryptomator/archive/1.5.5/cryptomator-1.5.5.tar.gz
+	source = https://github.com/cryptomator/cryptomator-linux/archive/1.5.5/cryptomator-linux-1.5.5.tar.gz
 	source = cryptomator-vault.xml
 	source = skip-assembly.patch
 	source = use-java-14.patch

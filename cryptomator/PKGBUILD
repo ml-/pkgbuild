@@ -5,15 +5,15 @@
 
 pkgname=cryptomator
 pkgver=1.5.5
-pkgrel=1
+pkgrel=2
 pkgdesc="Multiplatform transparent client-side encryption of your files in the cloud."
 arch=('any')
 url='https://cryptomator.org/'
 license=('GPL3')
-depends=('bash' 'jre14-openjdk' 'fuse2')
+depends=('bash' 'java-openjfx>=14' 'fuse2')
 makedepends=('jdk14-openjdk' 'maven')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cryptomator/cryptomator/archive/${pkgver}.tar.gz"
-        "${pkgname}-linux-${pkgver}.tar.gz::https://github.com/cryptomator/cryptomator-linux/archive/${pkgver}.tar.gz"
+source=("https://github.com/cryptomator/cryptomator/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+        "https://github.com/cryptomator/cryptomator-linux/archive/$pkgver/$pkgname-linux-$pkgver.tar.gz"
         'cryptomator-vault.xml'
         'skip-assembly.patch'
         'use-java-14.patch')
@@ -23,35 +23,35 @@ sha256sums=('f900b3d3a5b61af0c6407f6e636fbb2f8bd5de74634baec0df1de213a5265648'
             'e7a5ec317cd5ba14ae2393f27d14838a4158660575090309cb1459239e3644b5'
             '655ea9854e9f838fcddc7f3fe8a2379151bf5042e8f0da091325a993eb15471c')
 
-PATH="/usr/lib/jvm/java-14-openjdk/bin:${PATH}"
+PATH="/usr/lib/jvm/java-14-openjdk/bin:$PATH"
 prepare() {
   for i in use-java-14.patch skip-assembly.patch; do
-    patch -N -p1 -d "${pkgname}-${pkgver}" < "$i"
+    patch -N -p1 -d "$pkgname-$pkgver" < "$i"
   done
   #mvn dependency:resolve is broken, can't fetch anything
 }
 
 build() {
-  cd "${pkgname}-${pkgver}/main"
+  cd "$pkgname-$pkgver/main"
   mvn -B package -DskipTests -Prelease
 }
 
 check() {
-  cd "${pkgname}-${pkgver}/main"
+  cd "$pkgname-$pkgver/main"
   mvn -B test -Prelease
 }
 
 package() {
   # copy icons, desktop file and metadata info
-  cp -a "${pkgname}-linux-${pkgver}"/resources/appimage/AppDir/usr -t "$pkgdir"
+  cp -a "$pkgname-linux-$pkgver"/resources/appimage/AppDir/usr -t "$pkgdir"
 
-  cd "${pkgname}-${pkgver}"
-  local target="${pkgdir}/opt/cryptomator"
+  cd "$pkgname-$pkgver"
+  local target="$pkgdir/opt/cryptomator"
 
   cd main/buildkit/target
-  install -Dm644 -t "${target}/libs" libs/* linux-libs/*
-  install -Dm755 launcher-linux.sh "${target}/bin/cryptomator"
-  install -Dm644 "${srcdir}/cryptomator-vault.xml" "${pkgdir}/usr/share/mime/packages/cryptomator-vault.xml"
-  install -d "${pkgdir}/usr/bin"
-  ln -s "/opt/cryptomator/bin/cryptomator" "${pkgdir}/usr/bin/cryptomator"
+  install -Dm644 -t "$target/libs" libs/* linux-libs/*
+  install -Dm755 launcher-linux.sh "$target/bin/cryptomator"
+  install -Dm644 "$srcdir/cryptomator-vault.xml" "$pkgdir/usr/share/mime/packages/cryptomator-vault.xml"
+  install -d "$pkgdir/usr/bin"
+  ln -s "/opt/cryptomator/bin/cryptomator" "$pkgdir/usr/bin/cryptomator"
 }
