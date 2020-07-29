@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=operator-sdk
-pkgver=0.19.0
+pkgver=0.19.1
 pkgrel=1
 pkgdesc='SDK for building Kubernetes applications'
 arch=('x86_64' 'aarch64')
@@ -9,7 +9,7 @@ license=('Apache')
 depends=('glibc')
 makedepends=('go' 'git')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('0d9e7933de0990b6eaf23f35f401f193be94e517db4ce46d782d9e6481582aad')
+sha256sums=('184c323367dd39d2c6e775702450a9b803dd4b08408812d6d7973dab35973147')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
@@ -35,16 +35,12 @@ build() {
     GitVersion="v${pkgver}"
     KubernetesVersion="${BASH_REMATCH[1]}"
   )
-  #echo "${x[@]@A}"
   go build -o "${pkgname}" -ldflags "${x[*]/#/-X=github.com/operator-framework/operator-sdk/version.}" ./cmd/"${pkgname}"
 }
 
 check() {
   cd "${pkgname}-${pkgver}"
-  local -a test_pkgs=()
-  test_pkgs=($(go list ./...))
-  # test everything except e2e
-  go test -short ${test_pkgs[@]##github.com/operator-framework/operator-sdk/test/*}
+  go test -short ./cmd/operator-sdk/... ./internal/... ./pkg/...
 }
 
 package() {
