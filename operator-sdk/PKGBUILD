@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=operator-sdk
-pkgver=0.19.1
+pkgver=0.19.2
 pkgrel=1
 pkgdesc='SDK for building Kubernetes applications'
 arch=('x86_64' 'aarch64')
@@ -9,7 +9,7 @@ license=('Apache')
 depends=('glibc')
 makedepends=('go' 'git')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('184c323367dd39d2c6e775702450a9b803dd4b08408812d6d7973dab35973147')
+sha256sums=('60d41e61b5dd38f178dc23e83ae6458d05d6167fc0c601f5bdcadacb942c2675')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
