@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=operator-sdk
-pkgver=0.19.2
+pkgver=1.0.0
 pkgrel=1
 pkgdesc='SDK for building Kubernetes applications'
 arch=('x86_64' 'aarch64')
@@ -8,8 +8,9 @@ url='https://github.com/operator-framework/operator-sdk'
 license=('Apache')
 depends=('glibc')
 makedepends=('go' 'git')
+provides=('ansible-operator' 'helm-operator')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('60d41e61b5dd38f178dc23e83ae6458d05d6167fc0c601f5bdcadacb942c2675')
+sha256sums=('000d92bc519dac41fbe44dd8bbc6d662ff5d7c91b5b38d73b412513ba47987e9')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
@@ -35,15 +36,19 @@ build() {
     GitVersion="v${pkgver}"
     KubernetesVersion="${BASH_REMATCH[1]}"
   )
-  go build -o "${pkgname}" -ldflags "${x[*]/#/-X=github.com/operator-framework/operator-sdk/version.}" ./cmd/"${pkgname}"
+  go build -o . -ldflags "${x[*]/#/-X=github.com/operator-framework/operator-sdk/version.}" ./cmd/...
 }
 
 check() {
   cd "${pkgname}-${pkgver}"
-  go test -short ./cmd/operator-sdk/... ./internal/... ./pkg/...
+  chmod 400 "$pkgname"  # canary
+  go test -short ./internal/...
 }
 
 package() {
   cd "${pkgname}-${pkgver}"
-  install -Dm755 ${pkgname} -t "${pkgdir}/usr/bin"
+  install -Dm755 ${pkgname} "${provides[@]}" -t "${pkgdir}/usr/bin"
+
+  install -dm755 "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -at "${pkgdir}/usr/share/doc/${pkgname}" example
 }
