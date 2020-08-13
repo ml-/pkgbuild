@@ -27,7 +27,7 @@ build() {
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
-  go build -o plugin -ldflags "-X main.version=${pkgver}" ./cmd/plugin
+  go build -o plugin -ldflags "-linkmode=external -X main.version=${pkgver}" ./cmd/plugin
 }
 
 check() {

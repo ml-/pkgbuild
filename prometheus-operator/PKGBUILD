@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=prometheus-operator
-pkgver=0.41.0
+pkgver=0.41.1
 pkgrel=1
 pkgdesc='Creates, configures and manages Prometheus clusters atop Kubernetes'
 arch=('x86_64')
@@ -10,12 +10,11 @@ depends=('glibc')
 makedepends=('go')
 provides=('po-docgen' 'po-lint' 'po-rule-migration')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('0943ce2d2ce58d186997b53dfd51ebd519fb84e40a2859c67f096e842fcc61fe')
+sha256sums=('20f1aa48114745c786cd8ae63a50658bec0c99c7b2d264830a6a1bc5e70296e0')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
   go mod download
-  rm example/alertmanager-webhook/main
 }
 
 build() {
@@ -27,7 +26,7 @@ build() {
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
   mkdir -p bin
-  go build -o bin/ -ldflags "-X=github.com/coreos/prometheus-operator/pkg/version.Version=$pkgver" ./cmd/...
+  go build -o bin/ -ldflags "-linkmode=external -X=github.com/coreos/prometheus-operator/pkg/version.Version=$pkgver" ./cmd/...
 }
 
 check() {
@@ -37,6 +36,7 @@ check() {
 
 package() {
   cd "${pkgname}-${pkgver}"
+  rm -vf example/alertmanger-webhook/main
   install -Dm755 bundle.yaml -t "${pkgdir}/usr/share/doc/${pkgname}/crds"
   cp -a Documentation/* example/ README.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}"
 

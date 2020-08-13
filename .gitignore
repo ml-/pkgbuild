@@ -1,5 +1,2 @@
-/*/*
-!PKGBUILD
-!.SRCINFO
-!*.install
-!/.templates
+*.tar.*
+*.log

@@ -19,7 +19,6 @@ prepare() {
 }
 
 build() {
-  # illegal packaging technique: pulling commit hash from archive
   local commit=
   commit=$(bsdcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
 
@@ -35,7 +34,7 @@ build() {
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
-  go build -o ${pkgname} -ldflags "${x[*]/#/-X=}"
+  go build -o ${pkgname} -ldflags "-linkmode=external ${x[*]/#/-X=}"
 }
 
 check() {
