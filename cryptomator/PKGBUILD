@@ -4,8 +4,8 @@
 # Contributor: Sebastian Stenzel <sebastian.stenzel@gmail.com>
 
 pkgname=cryptomator
-pkgver=1.5.5
-pkgrel=2
+pkgver=1.5.8
+pkgrel=1
 pkgdesc="Multiplatform transparent client-side encryption of your files in the cloud."
 arch=('any')
 url='https://cryptomator.org/'
@@ -17,8 +17,8 @@ source=("https://github.com/cryptomator/cryptomator/archive/$pkgver/$pkgname-$pk
         'cryptomator-vault.xml'
         'skip-assembly.patch'
         'use-java-14.patch')
-sha256sums=('f900b3d3a5b61af0c6407f6e636fbb2f8bd5de74634baec0df1de213a5265648'
-            '9552c1e24f2ee7adc6207014cf5d4710b1425d912eb6e523a4ad6d5f78f8376c'
+sha256sums=('8147be842730bf3925b87ab884f3a7a501f5c97113f518a66ebd148b42134162'
+            '0e8a106be4b839a64a919f97f7c961707edc0540cd09bdba8d0d42a8cc0882d0'
             '78537ead26dcc1488d7fff02f47fce559f70f9bb2d7fa7fa1741ad3cd151bfad'
             'e7a5ec317cd5ba14ae2393f27d14838a4158660575090309cb1459239e3644b5'
             '655ea9854e9f838fcddc7f3fe8a2379151bf5042e8f0da091325a993eb15471c')
