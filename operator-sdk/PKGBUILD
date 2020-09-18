@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=operator-sdk
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc='SDK for building Kubernetes applications'
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,7 @@ depends=('glibc')
 makedepends=('go' 'git')
 provides=('ansible-operator' 'helm-operator')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('000d92bc519dac41fbe44dd8bbc6d662ff5d7c91b5b38d73b412513ba47987e9')
+sha256sums=('d49d285a5610f207ca4682f30a0e58d1dffe3223e54a91a02bdb1110e0b52cf0')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
@@ -18,7 +18,7 @@ prepare() {
 }
 
 build() {
-  local commit=
+  local commit x
   commit=$(bsdcat "${pkgname}-${pkgver}.tar.gz" | git get-tar-commit-id)
 
   cd "${pkgname}-${pkgver}"
@@ -31,12 +31,12 @@ build() {
 
   # grab k8s version from Makefile
   [[ $(<Makefile) =~ K8S_VERSION[\ =]+(v[[:digit:].]+) ]] # sets BASH_REMATCH
-  local -a x=(
+  x=(
     GitCommit="${commit:?}"
     GitVersion="v${pkgver}"
     KubernetesVersion="${BASH_REMATCH[1]}"
   )
-  go build -o . -ldflags "${x[*]/#/-X=github.com/operator-framework/operator-sdk/version.}" ./cmd/...
+  go build -o . -ldflags "-linkmode=external ${x[*]/#/-X=github.com/operator-framework/operator-sdk/version.}" ./cmd/...
 }
 
 check() {
