@@ -1,0 +1,40 @@
+# Maintainer: ml <>
+pkgname=cfssl
+pkgver=1.4.1
+pkgrel=1
+pkgdesc="Cloudflare's PKI and TLS toolkit"
+arch=('x86_64')
+url='https://github.com/cloudflare/cfssl'
+license=('BSD')
+depends=('glibc')
+makedepends=('go')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('c8a86ef10cbb0c168f3b597db15b31f98b170edb7958f7154edeb29aee41315e')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  go mod download
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  mkdir -p bin
+  go build -o bin/ -ldflags "-linkmode=external -X github.com/cloudflare/cfssl/cli/version.version=$pkgver" ./cmd/...
+}
+
+#check() {
+#  cd "${pkgname}-${pkgver}"
+#  go test -short ./...
+#}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 bin/* -t "${pkgdir}/usr/bin"
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
