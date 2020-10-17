@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=operator-sdk
-pkgver=1.0.1
+pkgver=1.1.0
 pkgrel=1
 pkgdesc='SDK for building Kubernetes applications'
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,7 @@ depends=('glibc')
 makedepends=('go' 'git')
 provides=('ansible-operator' 'helm-operator')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('d49d285a5610f207ca4682f30a0e58d1dffe3223e54a91a02bdb1110e0b52cf0')
+sha256sums=('cb6c91999017e56f0e3c29ac7f62195eb310adb42c2692f3396dee1365e39a11')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
@@ -48,7 +48,4 @@ check() {
 package() {
   cd "${pkgname}-${pkgver}"
   install -Dm755 ${pkgname} "${provides[@]}" -t "${pkgdir}/usr/bin"
-
-  install -dm755 "${pkgdir}/usr/share/doc/${pkgname}"
-  cp -at "${pkgdir}/usr/share/doc/${pkgname}" example
 }
