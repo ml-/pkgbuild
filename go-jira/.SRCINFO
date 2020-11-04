@@ -1,15 +1,15 @@
 pkgbase = go-jira
 	pkgdesc = simple jira command line client in Go
-	pkgver = 1.0.23
-	pkgrel = 2
+	pkgver = 1.0.27
+	pkgrel = 1
 	url = https://github.com/go-jira/jira
 	arch = x86_64
 	arch = i686
 	license = Apache
 	makedepends = go
 	depends = glibc
-	source = https://github.com/go-jira/jira/archive/v1.0.23/go-jira-1.0.23.tar.gz
-	sha256sums = 01c86d3119d050774caa41b89fb4f038026542eb1e362e89f3f89bf330b68354
+	source = https://github.com/go-jira/jira/archive/v1.0.27/go-jira-1.0.27.tar.gz
+	sha256sums = c5bcf7b61300b67a8f4e42ab60e462204130c352050e8551b1c23ab2ecafefc7
 
 pkgname = go-jira
 
