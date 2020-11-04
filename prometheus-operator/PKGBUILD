@@ -1,6 +1,6 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=prometheus-operator
-pkgver=0.42.1
+pkgver=0.43.1
 pkgrel=1
 pkgdesc='Creates, configures and manages Prometheus clusters atop Kubernetes'
 arch=('x86_64')
@@ -10,7 +10,7 @@ depends=('glibc')
 makedepends=('go')
 provides=('po-docgen' 'po-lint' 'po-rule-migration')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('0a0e6a25e36fcebdf402f9e8627079a5e02c0cdbf2ba17dff6f052ce4e8050f4')
+sha256sums=('2d9230c00bbdb3df9fbe51b1457566b41e390818238fcf61553d5a59d117006c')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
