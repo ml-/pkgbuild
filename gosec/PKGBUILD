@@ -1,15 +1,15 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=gosec
-pkgver=2.4.0
+pkgver=2.5.0
 pkgrel=1
-pkgdesc='gosec tool'
+pkgdesc='Golang security checker'
 arch=('x86_64')
 url='https://github.com/securego/gosec'
 license=('Apache')
 depends=('glibc')
 makedepends=('go' 'git')
 source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('5a567944ff509f39fd3f61955bfd6541b95e1971aff2cd477a030aeec2d73205')
+sha256sums=('5d4967570f953c8478a3e51a0dee5cfe6313f2570eca15e6fabd5d6379e530f4')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
@@ -29,12 +29,12 @@ build() {
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
-  go build -o . -mod=readonly -ldflags "${x[*]/#/-X=}" ./cmd/gosec
+  go build -o . -mod=readonly -ldflags "-linkmode=external ${x[*]/#/-X=}" ./cmd/gosec
 }
 
 check() {
   cd "${pkgname}-${pkgver}"
-  go test -short
+  go test -ldflags "-linkmode=external" -short
 }
 
 package() {
