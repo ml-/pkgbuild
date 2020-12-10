@@ -1,4 +1,4 @@
-*.tar.*
-*.log
-pkg/
-src/
+**/*
+!**/*.install
+!**/PKGBUILD
+!**/.SRCINFO
