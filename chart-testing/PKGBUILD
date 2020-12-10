@@ -1,8 +1,8 @@
 # Maintainer: ml <ml@visu.li>
 pkgname=chart-testing
-pkgver=3.0.0_rc.1
+pkgver=3.3.1
 _pkgtag=${pkgver/_/-}
-pkgrel=2
+pkgrel=1
 pkgdesc='CLI tool for linting and testing Helm charts'
 arch=('x86_64' 'aarch64' 'armv6h')
 url='https://github.com/helm/chart-testing'
@@ -10,12 +10,12 @@ license=('Apache')
 depends=('kubectl' 'git' 'yamllint' 'helm' 'yamale')
 makedepends=('go')
 source=("${url}/archive/v${_pkgtag}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('244abcb439a569f09f3233eaaae40e3fad5cc767c29bc3ee95a10a5c780dcfa8')
-backup=('etc/lintconf.yaml')
+sha256sums=('7b48e30ac365ccdc0c91c2d93bc9e264c4cd43df779b955063ecd874490f0186')
+backup=('etc/ct/lintconf.yaml')
 
 prepare() {
   cd "${pkgname}-${_pkgtag}"
-  go mod download
+  go get -d -modcacherw ./...
 }
 
 build() {
@@ -33,12 +33,12 @@ build() {
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -mod=readonly -modcacherw -trimpath'
-  go build -o bin/ct -ldflags "${x[*]/#/-X=github.com/helm/chart-testing/v3/ct/cmd.}" ./ct
+  go build -o bin/ct -ldflags "-linkmode=external ${x[*]/#/-X=github.com/helm/chart-testing/v3/ct/cmd.}" ./ct
 }
 
 check() {
   cd "${pkgname}-${_pkgtag}"
-  go test -short ./...
+  go test -ldflags "-linkmode=external ${x[*]/#/-X=github.com/helm/chart-testing/v3/ct/cmd.}" -short ./...
 }
 
 package() {
