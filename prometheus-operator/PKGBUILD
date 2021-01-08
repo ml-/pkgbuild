@@ -1,6 +1,6 @@
-# Maintainer: ml <ml@visu.li>
+# Maintainer: ml <>
 pkgname=prometheus-operator
-pkgver=0.43.1
+pkgver=0.44.1
 pkgrel=1
 pkgdesc='Creates, configures and manages Prometheus clusters atop Kubernetes'
 arch=('x86_64')
@@ -8,39 +8,34 @@ url='https://github.com/coreos/prometheus-operator'
 license=('Apache')
 depends=('glibc')
 makedepends=('go')
-provides=('po-docgen' 'po-lint' 'po-rule-migration')
-source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('2d9230c00bbdb3df9fbe51b1457566b41e390818238fcf61553d5a59d117006c')
-
-prepare() {
-  cd "${pkgname}-${pkgver}"
-  go mod download
-}
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('d935d737ed6ab4b856d69e3c1aeadbd33c3861cd74cc0a84f45e89a57ec846f3')
 
 build() {
-  cd "${pkgname}-${pkgver}"
+  cd "$pkgname-$pkgver"
   export CGO_ENABLED=1
   export CGO_LDFLAGS="$LDFLAGS"
   export CGO_CFLAGS="$CFLAGS"
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  export GOLDFLAGS="-linkmode=external -X=github.com/coreos/prometheus-operator/pkg/version.Version=$pkgver"
   mkdir -p bin
-  go build -o bin/ -ldflags "-linkmode=external -X=github.com/coreos/prometheus-operator/pkg/version.Version=$pkgver" ./cmd/...
+  go build -o bin/ -ldflags "$GOLDFLAGS" ./cmd/...
 }
 
 check() {
-  cd "${pkgname}-${pkgver}"
-  go test -short ./{cmd,pkg}/...
+  cd "$pkgname-$pkgver"
+  go test -ldflags "$GOLDFLAGS" -short ./{cmd,pkg}/...
 }
 
 package() {
-  cd "${pkgname}-${pkgver}"
+  cd "$pkgname-$pkgver"
   rm -vf example/alertmanger-webhook/main
-  install -Dm755 bundle.yaml -t "${pkgdir}/usr/share/doc/${pkgname}/crds"
-  cp -a Documentation/* example/ README.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm755 bundle.yaml -t "$pkgdir/usr/share/doc/$pkgname/crds"
+  cp -a Documentation/* example/ README.md CHANGELOG.md -t "$pkgdir/usr/share/doc/$pkgname"
 
   cd bin
   mv operator "$pkgname"
-  install -Dm755 prometheus-{operator,config-reloader} po-{docgen,lint,rule-migration} -t "${pkgdir}/usr/bin"
+  install -Dm755 prometheus-{operator,config-reloader} po-{docgen,lint,rule-migration} -t "$pkgdir/usr/bin"
 }

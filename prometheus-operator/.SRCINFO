@@ -1,17 +1,14 @@
 pkgbase = prometheus-operator
 	pkgdesc = Creates, configures and manages Prometheus clusters atop Kubernetes
-	pkgver = 0.43.1
+	pkgver = 0.44.1
 	pkgrel = 1
 	url = https://github.com/coreos/prometheus-operator
 	arch = x86_64
 	license = Apache
 	makedepends = go
 	depends = glibc
-	provides = po-docgen
-	provides = po-lint
-	provides = po-rule-migration
-	source = https://github.com/coreos/prometheus-operator/archive/v0.43.1/prometheus-operator-0.43.1.tar.gz
-	sha256sums = 2d9230c00bbdb3df9fbe51b1457566b41e390818238fcf61553d5a59d117006c
+	source = https://github.com/coreos/prometheus-operator/archive/v0.44.1/prometheus-operator-0.44.1.tar.gz
+	sha256sums = d935d737ed6ab4b856d69e3c1aeadbd33c3861cd74cc0a84f45e89a57ec846f3
 
 pkgname = prometheus-operator
 
