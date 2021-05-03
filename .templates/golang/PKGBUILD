@@ -8,15 +8,10 @@ url='https://github.com/example/project'
 license=('Apache')
 # grep -rF exec.Command
 depends=('glibc')
-makedepends=('go')
+makedepends=('git' 'go')
 #source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
 source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
 sha256sums=('fef697c982a08a797ebe9cece5abec772001c63cbe2b4fcacaf06bf510e98c87')
-
-prepare() {
-  cd "$pkgname-$pkgver"
-  go get -d # ./... # append if no .go file in root
-}
 
 build() {
   local commit=
@@ -33,17 +28,18 @@ build() {
   export CGO_CFLAGS="$CFLAGS"
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
-  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
   go build -o "$pkgname" -ldflags "-linkmode=external ${x[*]/#/-X=}"
 }
 
 check() {
   cd "$pkgname-$pkgver"
-  #go test -short ./...
+  go test -short ./...
 }
 
 package() {
   cd "$pkgname-$pkgver"
   install -Dm755 "$pkgname" -t "$pkgdir/usr/bin"
-  #install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
 }
