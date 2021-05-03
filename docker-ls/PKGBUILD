@@ -1,23 +1,17 @@
 # Maintainer: ml <ml@visu.li>
-# Contributor: Lukas Zimmermann <luk.zim91 at gmail dot com> 
+# Contributor: Lukas Zimmermann <luk.zim91 at gmail dot com>
 pkgname=docker-ls
-pkgver=0.3.2
-pkgrel=2
+pkgver=0.5.1
+pkgrel=1
 pkgdesc='Tools for browsing and manipulating docker registries'
 url='https://github.com/mayflower/docker-ls'
 license=('MIT')
-arch=('x86_64' 'i686')
+arch=('x86_64' 'i686' 'aarch64' 'arm' 'armv6h' 'armv7h')
 depends=('glibc')
 makedepends=('go')
 provides=('docker-rm')
-source=("https://github.com/mayflower/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('aa26657ca6271456ee9944ac4f18f25ff1593e7a85e7da6156c907681e342478')
-
-prepare() {
-  cd "${pkgname}-${pkgver}"
-  [[ -f go.mod ]] || go mod init github.com/mayflower/docker-ls
-  go mod tidy
-}
+source=("$url/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('53e6bf3f7b24d37f1038e2ed7dedbf7608d314c93f60f325e6fe7ab3883c5881')
 
 build() {
   cd "${pkgname}-${pkgver}"
@@ -26,25 +20,28 @@ build() {
   export CGO_CFLAGS="$CFLAGS"
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
-  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
-  go build ./cli/docker-ls
-  go build ./cli/docker-rm
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
+  go build -o . -ldflags="-linkmode=external -X github.com/mayflower/docker-ls/lib.staticVersion=$pkgver" ./cli/docker-ls  ./cli/docker-rm
+
+  # do not try to load config in HOME
+  local HOME=/dev/null
+  for i in docker-{ls,rm}; do
+    ./"$i" autocomplete bash >"$i".bash
+    ./"$i" autocomplete zsh >"$i".zsh
+  done
 }
 
 check() {
   cd "${pkgname}-${pkgver}"
-  go test ./...
+  go test -short ./...
 }
 
 package() {
   cd "${pkgname}-${pkgver}"
-  local HOME
-  # do not load ~/.docker-ls.yaml
-  HOME=/dev/null
-  for cmd in docker-{ls,rm}; do
-    ./"$cmd" autocomplete bash | install -Dm644 /dev/stdin "${pkgdir}/usr/share/bash-completion/completions/${cmd}"
-    ./"$cmd" autocomplete zsh | install -Dm644 /dev/stdin "${pkgdir}/usr/share/zsh/site-functions/_${cmd}"
-    install -Dm755 "$cmd" -t "${pkgdir}/usr/bin"
+  for i in docker-{ls,rm}; do
+    install -Dm755 "$i" -t "$pkgdir/usr/bin"
+    install -Dm644 "$i".bash "${pkgdir}"/usr/share/bash-completion/completions/"$i"
+    install -Dm644 "$i".zsh "$pkgdir"/usr/share/zsh/site-functions/_"$i"
   done
   install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
 }
