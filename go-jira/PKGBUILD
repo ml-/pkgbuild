@@ -1,7 +1,7 @@
-# Maintainer: ml <ml@visu.li>
+# Maintainer: ml <>
 pkgname=go-jira
 pkgver=1.0.27
-pkgrel=1
+pkgrel=2
 pkgdesc='simple jira command line client in Go'
 arch=('x86_64' 'i686')
 url='https://github.com/go-jira/jira'
@@ -12,11 +12,6 @@ source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
 sha256sums=('c5bcf7b61300b67a8f4e42ab60e462204130c352050e8551b1c23ab2ecafefc7')
 _bin=${pkgname#go-}
 
-prepare() {
-  cd "${_bin}-${pkgver}"
-  go mod download
-}
-
 build() {
   cd "${_bin}-${pkgver}"
   export CGO_ENABLED=1
@@ -24,7 +19,7 @@ build() {
   export CGO_CFLAGS="$CFLAGS"
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
-  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
   go build -ldflags="-linkmode=external -X github.com/go-jira/jira.VERSION=$pkgver" ./cmd/jira
 }
 
