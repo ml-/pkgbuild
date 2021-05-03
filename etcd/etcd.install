@@ -1,0 +1,6 @@
+pre_upgrade() {
+cat << EOF
+	To upgrade an existing etcd deployment please read the docs located at:
+	  /usr/share/doc/etcd/upgrades/
+EOF
+}
