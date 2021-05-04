@@ -1,0 +1,17 @@
+pkgbase = skaffold
+	pkgdesc = Easy and Repeatable Kubernetes Development
+	pkgver = 1.23.0
+	pkgrel = 1
+	url = https://skaffold.dev
+	arch = x86_64
+	license = Apache
+	makedepends = git
+	makedepends = go
+	depends = docker
+	optdepends = kubectl: For Kubernetes support
+	optdepends = helm: Helm Chart deployments
+	source = https://github.com/GoogleContainerTools/skaffold/archive/v1.23.0/skaffold-1.23.0.tar.gz
+	sha256sums = 1877bd2e52471e77f03b3b78c4740fb4880f462a3c345f006f9416bfe0f041c9
+
+pkgname = skaffold
+

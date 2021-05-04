@@ -1,0 +1,50 @@
+# Maintainer Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Fredy García <frealgagu at gmail dot com>
+# Maintainer: Maxim Baz <${pkgname} at maximbaz dot com>
+# Contributor: Stefan Cocora <stefan dot cocora at gmail dot com>
+
+pkgname=skaffold
+pkgver=1.23.0
+pkgrel=1
+pkgdesc='Easy and Repeatable Kubernetes Development'
+arch=('x86_64')
+url='https://skaffold.dev'
+license=('Apache')
+depends=('docker')
+makedepends=('git' 'go')
+optdepends=(
+  "kubectl: For Kubernetes support"
+  "helm: Helm Chart deployments"
+)
+source=("https://github.com/GoogleContainerTools/skaffold/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('1877bd2e52471e77f03b3b78c4740fb4880f462a3c345f006f9416bfe0f041c9')
+
+build() {
+  _x=(
+    version=v"$pkgver"
+    buildDate="$(TZ=UTC printf '%(%FT%T)TZ' "$SOURCE_DATE_EPOCH")"
+    gitCommit="$(bsdcat "$pkgname-$pkgver.tar.gz" | git get-tar-commit-id)"
+  )
+
+  cd "$pkgname-$pkgver"
+  export CGO_ENABLED=1
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
+  go build -ldflags="-linkmode=external ${_x[*]/#/-X=github.com/GoogleContainerTools/skaffold/pkg/skaffold/version.}" ./cmd/skaffold
+
+  # Create completion files
+  ./"$pkgname" completion bash >"$pkgname"-completion.bash
+  ./"$pkgname" completion zsh >"$pkgname"-completion.zsh
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 "$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm644 "$pkgname-completion.bash" "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -Dm644 "$pkgname-completion.zsh" "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+  install -dm755 "$pkgdir/usr/share/doc/$pkgname"
+  cp -a examples -t "$pkgdir/usr/share/doc/$pkgname"
+}
