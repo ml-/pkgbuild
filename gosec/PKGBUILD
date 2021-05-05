@@ -1,4 +1,4 @@
-# Maintainer: ml <ml@visu.li>
+# Maintainer: ml <>
 pkgname=gosec
 pkgver=2.5.0
 pkgrel=1

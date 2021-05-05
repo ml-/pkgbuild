@@ -1,4 +1,4 @@
-# Maintainer: ml <ml@visu.li>
+# Maintainer: ml <>
 pkgname=chart-testing
 pkgver=3.3.1
 _pkgtag=${pkgver/_/-}
