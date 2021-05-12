@@ -1,0 +1,45 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+
+pkgname=k9s
+pkgver=0.24.9
+pkgrel=1
+pkgdesc='TUI for managing Kubernetes clusters and pods'
+arch=(x86_64)
+url='https://github.com/derailed/k9s'
+license=(Apache)
+depends=(glibc)
+makedepends=(git go)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('d4a97a244d2320e42015505e4d78dd1a459adf822371e5e910f6b33027b290ae')
+
+build() {
+  _commit=$(bsdcat "$pkgname-$pkgver.tar.gz" | git get-tar-commit-id)
+  _x=(
+    commit="${_commit:0:8}"
+    date="$(TZ=UTC printf '%(%FT%T)TZ' "${SOURCE_DATE_EPOCH:=-1}")"
+    version="$pkgver"
+  )
+  cd $pkgname-$pkgver
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
+  go build -ldflags="-linkmode=external ${_x[*]/#/-X=github.com/derailed/k9s/cmd.}"
+}
+
+check() {
+  cd $pkgname-$pkgver
+  go test -short ./...
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -Dm755 "$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# getver: github.com/derailed/k9s/releases
+# vim: ts=2 sw=2 et:
