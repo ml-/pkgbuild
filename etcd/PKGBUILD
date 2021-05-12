@@ -30,7 +30,7 @@ sha512sums=('3f413debe8bd723a00a3e39db05f6dbf414b7dc02f40f07d3037445c63b31c7bd8a
 
 prepare() {
   cd "$pkgname-$pkgver"
-  # modules.txt file is missing in vendor directory
+  # modules.txt file is missing in vendor directory (fixed in 3.5.x)
   # only way to recreate is `go mod vendor`, which fetches all dependencies
   # to GOPATH before moving to new vendor directory. Sad!
   go mod vendor -modcacherw
@@ -53,7 +53,6 @@ build() {
 package() {
   # Adding 'EnvironmentFile=-/etc/conf.d/etcd' option to the unit
   install -Dm644 10-EnvironmentFile.conf -t "$pkgdir"/usr/lib/systemd/system/"$pkgname".service.d
-
   # env file itself
   install -Dm644 etcd.env "$pkgdir"/etc/conf.d/etcd
 
@@ -66,14 +65,10 @@ package() {
 
   # binaries
   install -Dm755 bin/etcd{,ctl,-dump-{db,logs,metrics}} -t "$pkgdir"/usr/bin
-
   # renaming benchmark to avoid conflict with 'festival'
   install -m755 bin/benchmark "$pkgdir"/usr/bin/etcd-benchmark
 
-  # License
   install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"$pkgname"
-
-  # Docs
   install -Dm644 "$pkgname".conf.yml.sample -t "$pkgdir"/usr/share/doc/"$pkgname"
   cp -r Documentation/* -t "$pkgdir"/usr/share/doc/"$pkgname"
 }
