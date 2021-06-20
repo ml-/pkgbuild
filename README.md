@@ -1,9 +1,5 @@
 # pkgbuild
 
-[PKGBUILD templates](./.pkgbuild-templates)
-
----
-
 - [Packaging](#packaging)
   - [Github and the `${pkgname}-${pkgver}.tar.gz::` source format](#github-and-the-pkgname-pkgvertargz-source-format)
   - [Commit id from Git source archives](#commit-id-from-git-source-archives)
