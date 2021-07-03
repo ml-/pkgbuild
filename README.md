@@ -1,30 +1,49 @@
 # pkgbuild
 
-- [Packaging](#packaging)
-  - [Github and the `${pkgname}-${pkgver}.tar.gz::` source format](#github-and-the-pkgname-pkgvertargz-source-format)
-  - [Commit id from Git source archives](#commit-id-from-git-source-archives)
+## Cheatsheet
+
+### arch
+
+```bash
+arch=(
+  # Arch Linux (amd64)
+  'x86_64'
+
+  # Arch Linux 32
+  'i486'
+  'i686'
+  'pentium4'
+
+  # Arch Linux ARM
+  'arm'     # (armv5)
+  'armv6h'
+  'armv7h'
+  'aarch64' # (armv8 64-bit)
+)
+
+# independent
+arch=('any')
+```
 
 ## Packaging
 
 ### Github and the `${pkgname}-${pkgver}.tar.gz::` source format
 
-Github supports the URL pattern `/org/project/archive/v1.2.3/project-v1.2.3.tar.gz`
+Github supports the URL pattern `https://github.com/user/project/archive/v1.2.3/project-v1.2.3.tar.gz`
 
 Which means you can change `source` from this:
 
 ```bash
-source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
 ```
 
 to this:
 
 ```bash
-source=("${url}/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.gz")
+source=("$url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz")
 ```
 
-**Credits to:**
-
-- anthraxx @ [[aur-general] TU application: hashworks](https://lists.archlinux.org/pipermail/aur-general/2020-June/035805.html)
+**Credits:** anthraxx @ [[aur-general] TU application: hashworks](https://lists.archlinux.org/pipermail/aur-general/2020-June/035805.html)
 
 ### Commit id from Git source archives
 
