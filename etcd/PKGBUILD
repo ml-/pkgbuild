@@ -1,4 +1,4 @@
-# Thief: ml <>
+#!/usr/bin/env bash
 # Maintainer: Andrew Crerar <crerar@archlinux.org>
 # Contributor: guillaume alaux <guillaume at alaux dot net>
 # Contributor: korjjj <korjjj+aur[at]gmail[dot]com>
@@ -6,7 +6,7 @@
 # Contributor: codekoala <codekoala at gmail dot com>
 
 pkgname=etcd
-pkgver=3.4.16
+pkgver=3.5.0
 pkgrel=1
 pkgdesc='A highly-available key value store for shared configuration and service discovery.'
 arch=('x86_64' 'armv6h' 'armv7h')
@@ -22,7 +22,7 @@ source=(https://github.com/etcd-io/"$pkgname"/archive/v"$pkgver"/"$pkgname"-"$pk
         etcd.env
         tmpfiles.conf
         sysusers.conf)
-sha512sums=('3f413debe8bd723a00a3e39db05f6dbf414b7dc02f40f07d3037445c63b31c7bd8adaf77152ae01aa6aae3966f65393c5c8e352bbc2b86d01e5e2dd979c1c2e1'
+sha512sums=('ea332fe99c9bce842dc9919b7cf676db2024adf83c23c37dcd8db48bc2a2d3f98879893701644a2317dea69dc15f747f42f5473f14f4343fe7aee9a6b4ebceca'
             'fa85d772929ea7e0a18bddd4b9c41d043a7f75e560eacfab67b979985e510dea694c332b5130570e47101c1ec5c25925872c6a581568390e7b141d9c6c26aae2'
             '040cee3c04dd5bb253415169d1f6f50bbccac10b687706c1b168184985c0c6c6cc67858f0c71d2ebb475891e54b370fa39b20ead5155658d01fac31d7d388324'
             '9272c649e43774302347f550b4034737edd5735516ab38eb23c7e561e3f40d925d78f91e01efc4519aa1ec951137816b35a593bbc3ff65076fc1b94c19ede2f1'
@@ -33,10 +33,11 @@ prepare() {
   # modules.txt file is missing in vendor directory (fixed in 3.5.x)
   # only way to recreate is `go mod vendor`, which fetches all dependencies
   # to GOPATH before moving to new vendor directory. Sad!
-  go mod vendor -modcacherw
+  #go mod vendor -modcacherw
 }
 
 build() {
+  local _commit
   _commit=$(bsdcat "$pkgname-$pkgver.tar.gz" | git get-tar-commit-id)
   cd "$pkgname-$pkgver"
   export CGO_ENABLED=1
@@ -46,29 +47,46 @@ build() {
   export CGO_LDFLAGS="$LDFLAGS"
   export GOFLAGS="-buildmode=pie -trimpath  -modcacherw"
 
-  go build -o bin/ -ldflags="-linkmode=external -X go.etcd.io/etcd/version.GitSHA=${_commit:0:7}" \
-    . ./etcdctl ./tools/{benchmark,etcd-dump-{db,logs,metrics}}
+  # go.etcd.io/etcd/api/v3/version.GitSHA=${_commit:0:7}
+  mkdir -p "$PWD/bin"
+  local -a _flags=(
+    -o="$PWD/bin"
+    -ldflags="-linkmode=external -X=go.etcd.io/etcd/api/v3/version.GitSHA=${_commit:0:7}"
+  )
+  for i in server etcdutl etcdctl; do
+    (
+      cd "$i"
+              go build "${_flags[@]}"
+    )
+  done
+  go build "${_flags[@]}" ./tools/{benchmark,etcd-dump-{db,logs},local-tester/bridge}
+
+  cd tests
+  go build "${_flags[@]}" ./functional/cmd/etcd-{agent,proxy,runner,tester}
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  # @TODO
 }
 
 package() {
   # Adding 'EnvironmentFile=-/etc/conf.d/etcd' option to the unit
   install -Dm644 10-EnvironmentFile.conf -t "$pkgdir"/usr/lib/systemd/system/"$pkgname".service.d
-  # env file itself
   install -Dm644 etcd.env "$pkgdir"/etc/conf.d/etcd
-
   install -Dm644 tmpfiles.conf "$pkgdir"/usr/lib/tmpfiles.d/etcd.conf
   install -Dm644 sysusers.conf "$pkgdir"/usr/lib/sysusers.d/etcd.conf
 
   cd "$pkgname-$pkgver"
-  # systemd files
-  install -Dm644 contrib/systemd/etcd.service -t "$pkgdir"/usr/lib/systemd/system
-
-  # binaries
-  install -Dm755 bin/etcd{,ctl,-dump-{db,logs,metrics}} -t "$pkgdir"/usr/bin
-  # renaming benchmark to avoid conflict with 'festival'
-  install -m755 bin/benchmark "$pkgdir"/usr/bin/etcd-benchmark
-
+  install -m644 contrib/systemd/etcd.service -t "$pkgdir"/usr/lib/systemd/system
   install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"$pkgname"
   install -Dm644 "$pkgname".conf.yml.sample -t "$pkgdir"/usr/share/doc/"$pkgname"
   cp -r Documentation/* -t "$pkgdir"/usr/share/doc/"$pkgname"
+
+  cd bin
+  install -Dm755 server "$pkgdir"/usr/bin/etcd
+  install -m755 etcd{ctl,utl} -t "$pkgdir"/usr/bin
+  install -Dm755 etcd-dump-{db,logs} bridge benchmark -t "$pkgdir"/usr/lib/"$pkgname"
+  # useful looking tools for testing
+  install -Dm755 etcd-{agent,proxy,runner,tester} -t "$pkgdir"/usr/lib/"$pkgname"/functional
 }
