@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Maintainer: Andrew Crerar <crerar@archlinux.org>
+# Maintainer: ml <>
+# Maintainer: Andrew Crerar <crerar@archlinux.org> (AUR)
 # Contributor: guillaume alaux <guillaume at alaux dot net>
 # Contributor: korjjj <korjjj+aur[at]gmail[dot]com>
 # Contributor: xeross <contact at xeross dot me>
@@ -7,9 +8,9 @@
 
 pkgname=etcd
 pkgver=3.5.0
-pkgrel=1
+pkgrel=2
 pkgdesc='A highly-available key value store for shared configuration and service discovery.'
-arch=('x86_64' 'armv6h' 'armv7h')
+arch=('x86_64' 'aarch64')
 url='https://github.com/etcd-io/etcd'
 license=('Apache')
 depends=('glibc')
@@ -17,24 +18,14 @@ makedepends=('git' 'go')
 backup=('etc/conf.d/etcd')
 install=etcd.install
 provides=('etcdctl')
-source=(https://github.com/etcd-io/"$pkgname"/archive/v"$pkgver"/"$pkgname"-"$pkgver".tar.gz
+source=("$url"/archive/v"$pkgver"/"$pkgname"-"$pkgver".tar.gz
         10-EnvironmentFile.conf
         etcd.env
-        tmpfiles.conf
-        sysusers.conf)
+        tmpfiles.conf)
 sha512sums=('ea332fe99c9bce842dc9919b7cf676db2024adf83c23c37dcd8db48bc2a2d3f98879893701644a2317dea69dc15f747f42f5473f14f4343fe7aee9a6b4ebceca'
             'fa85d772929ea7e0a18bddd4b9c41d043a7f75e560eacfab67b979985e510dea694c332b5130570e47101c1ec5c25925872c6a581568390e7b141d9c6c26aae2'
             '040cee3c04dd5bb253415169d1f6f50bbccac10b687706c1b168184985c0c6c6cc67858f0c71d2ebb475891e54b370fa39b20ead5155658d01fac31d7d388324'
-            '9272c649e43774302347f550b4034737edd5735516ab38eb23c7e561e3f40d925d78f91e01efc4519aa1ec951137816b35a593bbc3ff65076fc1b94c19ede2f1'
-            'b62dd31553c959c4ac5cebdcb9ca2a58c6e26809d639ec1d82141d5900ffe4fab358e40bab8c458b14809e49281530f10f39dc8a52bdac834fb0c94196fd052a')
-
-prepare() {
-  cd "$pkgname-$pkgver"
-  # modules.txt file is missing in vendor directory (fixed in 3.5.x)
-  # only way to recreate is `go mod vendor`, which fetches all dependencies
-  # to GOPATH before moving to new vendor directory. Sad!
-  #go mod vendor -modcacherw
-}
+            '9272c649e43774302347f550b4034737edd5735516ab38eb23c7e561e3f40d925d78f91e01efc4519aa1ec951137816b35a593bbc3ff65076fc1b94c19ede2f1')
 
 build() {
   local _commit
@@ -65,20 +56,14 @@ build() {
   go build "${_flags[@]}" ./functional/cmd/etcd-{agent,proxy,runner,tester}
 }
 
-check() {
-  cd "$pkgname-$pkgver"
-  # @TODO
-}
-
 package() {
-  # Adding 'EnvironmentFile=-/etc/conf.d/etcd' option to the unit
-  install -Dm644 10-EnvironmentFile.conf -t "$pkgdir"/usr/lib/systemd/system/"$pkgname".service.d
+  install -Dm644 10-EnvironmentFile.conf -t "$pkgdir"/usr/lib/systemd/system/etcd.service.d
   install -Dm644 etcd.env "$pkgdir"/etc/conf.d/etcd
-  install -Dm644 tmpfiles.conf "$pkgdir"/usr/lib/tmpfiles.d/etcd.conf
-  install -Dm644 sysusers.conf "$pkgdir"/usr/lib/sysusers.d/etcd.conf
+  install -Dm644 tmpfiles.conf "$pkgdir"/usr/lib/tmpfiles.d/"$pkgname".conf
 
   cd "$pkgname-$pkgver"
-  install -m644 contrib/systemd/etcd.service -t "$pkgdir"/usr/lib/systemd/system
+  install -Dm644 contrib/systemd/sysusers.d/20-etcd.conf "$pkgdir"/usr/lib/sysusers.d/"$pkgname".conf
+  install -Dm644 contrib/systemd/etcd.service -t "$pkgdir"/usr/lib/systemd/system
   install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"$pkgname"
   install -Dm644 "$pkgname".conf.yml.sample -t "$pkgdir"/usr/share/doc/"$pkgname"
   cp -r Documentation/* -t "$pkgdir"/usr/share/doc/"$pkgname"
