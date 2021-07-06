@@ -1,0 +1,40 @@
+# Maintainer: ml <>
+pkgname=flux2
+pkgver=0.16.0
+pkgrel=1
+pkgdesc='Open and extensible CD solution for k8s'
+arch=('x86_64' 'aarch64' 'arm' 'armv6h' 'armv7h')
+url='https://github.com/fluxcd/flux2'
+license=('Apache')
+depends=('glibc')
+makedepends=('kustomize' 'go')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('afbab4d7893962e081cb434e52a60818ef9dd0413eaaf474d5f95b7844c70609')
+
+build() {
+  cd "$pkgname-$pkgver"
+  export CGO_ENABLED=1
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
+  ./manifests/scripts/bundle.sh ./manifests ./cmd/flux/manifests
+  go build -ldflags "-linkmode=external -X=main.VERSION=$pkgver" ./cmd/flux
+  ./flux completion bash >completion.bash
+  ./flux completion fish >completion.fish
+  ./flux completion zsh >completion.zsh
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  go test -short ./internal/...
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 flux -t "$pkgdir/usr/bin"
+  install -Dm644 completion.bash "$pkgdir"/usr/share/bash-completion/completions/flux
+  install -Dm644 completion.fish "$pkgdir"/usr/share/fish/vendor_completions.d/flux.fish
+  install -Dm644 completion.zsh "$pkgdir"/usr/share/zsh/site-functions/_flux
+}
