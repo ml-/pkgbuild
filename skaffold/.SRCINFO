@@ -1,6 +1,6 @@
 pkgbase = skaffold
 	pkgdesc = Easy and Repeatable Kubernetes Development
-	pkgver = 1.25.0
+	pkgver = 1.27.0
 	pkgrel = 1
 	url = https://skaffold.dev
 	arch = x86_64
@@ -10,8 +10,7 @@ pkgbase = skaffold
 	depends = docker
 	optdepends = kubectl: For Kubernetes support
 	optdepends = helm: Helm Chart deployments
-	source = https://github.com/GoogleContainerTools/skaffold/archive/v1.25.0/skaffold-1.25.0.tar.gz
-	sha256sums = de267c84d95d13bc6358821d352d716c597f76d7ba842c982e99d76be510c485
+	source = https://github.com/GoogleContainerTools/skaffold/archive/v1.27.0/skaffold-1.27.0.tar.gz
+	sha256sums = c82a842d138f75dbab5cbc64f0dda3cce6bfb0c7bba5a6ecfaed0c9799b556b1
 
 pkgname = skaffold
-
