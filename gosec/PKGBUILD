@@ -1,6 +1,6 @@
 # Maintainer: ml <>
 pkgname=gosec
-pkgver=2.5.0
+pkgver=2.8.1
 pkgrel=1
 pkgdesc='Golang security checker'
 arch=('x86_64')
@@ -8,37 +8,33 @@ url='https://github.com/securego/gosec'
 license=('Apache')
 depends=('glibc')
 makedepends=('go' 'git')
-source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha256sums=('5d4967570f953c8478a3e51a0dee5cfe6313f2570eca15e6fabd5d6379e530f4')
-
-prepare() {
-  cd "${pkgname}-${pkgver}"
-  go mod download
-}
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('54820f7120265745710f54246ea5cde0fbdd6a9024cec8147f34b3c1855bdcec')
 
 build() {
   local -a x=(
-    main.BuildDate="$(TZ=UTC printf '%(%FT%T)TZ' "${SOURCE_DATE_EPOCH}")"
-    main.GitTag="v${pkgver}"
-    main.Version="${pkgver}"
+    main.BuildDate="$(TZ=UTC printf '%(%FT%T)TZ' "${SOURCE_DATE_EPOCH:--1}")"
+    main.GitTag="v$pkgver"
+    main.Version="$pkgver"
   )
-  cd "${pkgname}-${pkgver}"
+
+  cd "$pkgname-$pkgver"
   export CGO_ENABLED=1
   export CGO_LDFLAGS="$LDFLAGS"
   export CGO_CFLAGS="$CFLAGS"
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CXXFLAGS="$CXXFLAGS"
   export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
-  go build -o . -mod=readonly -ldflags "-linkmode=external ${x[*]/#/-X=}" ./cmd/gosec
+  go build -ldflags "-linkmode=external ${x[*]/#/-X=}" ./cmd/gosec
 }
 
 check() {
-  cd "${pkgname}-${pkgver}"
-  go test -ldflags "-linkmode=external" -short
+  cd "$pkgname-$pkgver"
+  go test -short ./...
 }
 
 package() {
-  cd "${pkgname}-${pkgver}"
-  install -Dm755 "${pkgname}" -t "${pkgdir}/usr/bin"
-  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  cd "$pkgname-$pkgver"
+  install -Dm755 "$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
 }

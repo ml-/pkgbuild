@@ -1,6 +1,6 @@
 pkgbase = gosec
 	pkgdesc = Golang security checker
-	pkgver = 2.5.0
+	pkgver = 2.8.1
 	pkgrel = 1
 	url = https://github.com/securego/gosec
 	arch = x86_64
@@ -8,8 +8,7 @@ pkgbase = gosec
 	makedepends = go
 	makedepends = git
 	depends = glibc
-	source = https://github.com/securego/gosec/archive/v2.5.0/gosec-2.5.0.tar.gz
-	sha256sums = 5d4967570f953c8478a3e51a0dee5cfe6313f2570eca15e6fabd5d6379e530f4
+	source = https://github.com/securego/gosec/archive/v2.8.1/gosec-2.8.1.tar.gz
+	sha256sums = 54820f7120265745710f54246ea5cde0fbdd6a9024cec8147f34b3c1855bdcec
 
 pkgname = gosec
-
