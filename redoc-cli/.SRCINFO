@@ -5,6 +5,7 @@ pkgbase = redoc-cli
 	url = https://github.com/Redocly/redoc
 	arch = any
 	license = MIT
+	makedepends = modclean
 	makedepends = npm
 	depends = nodejs
 	noextract = redoc-cli-0.12.1.tgz
