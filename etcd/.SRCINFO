@@ -1,7 +1,6 @@
 pkgbase = etcd
-	pkgdesc = A highly-available key value store for shared configuration and service discovery.
 	pkgver = 3.5.0
-	pkgrel = 2
+	pkgrel = 3
 	url = https://github.com/etcd-io/etcd
 	install = etcd.install
 	arch = x86_64
@@ -9,9 +8,6 @@ pkgbase = etcd
 	license = Apache
 	makedepends = git
 	makedepends = go
-	depends = glibc
-	provides = etcdctl
-	backup = etc/conf.d/etcd
 	source = https://github.com/etcd-io/etcd/archive/v3.5.0/etcd-3.5.0.tar.gz
 	source = 10-EnvironmentFile.conf
 	source = etcd.env
@@ -22,3 +18,11 @@ pkgbase = etcd
 	sha512sums = 9272c649e43774302347f550b4034737edd5735516ab38eb23c7e561e3f40d925d78f91e01efc4519aa1ec951137816b35a593bbc3ff65076fc1b94c19ede2f1
 
 pkgname = etcd
+	pkgdesc = highly-available key value store for shared configuration and service discovery
+	depends = glibc
+	provides = etcdctl
+	backup = etc/conf.d/etcd
+
+pkgname = etcd-tools
+	pkgdesc = benchmark, testing and debugging tools for etcd
+	depends = etcd

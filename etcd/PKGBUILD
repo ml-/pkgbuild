@@ -6,19 +6,16 @@
 # Contributor: xeross <contact at xeross dot me>
 # Contributor: codekoala <codekoala at gmail dot com>
 
-pkgname=etcd
+pkgbase=etcd
+pkgname=('etcd' 'etcd-tools')
 pkgver=3.5.0
-pkgrel=2
-pkgdesc='A highly-available key value store for shared configuration and service discovery.'
+pkgrel=3
 arch=('x86_64' 'aarch64')
 url='https://github.com/etcd-io/etcd'
 license=('Apache')
-depends=('glibc')
 makedepends=('git' 'go')
-backup=('etc/conf.d/etcd')
 install=etcd.install
-provides=('etcdctl')
-source=("$url"/archive/v"$pkgver"/"$pkgname"-"$pkgver".tar.gz
+source=("$url"/archive/v"$pkgver"/"$pkgbase"-"$pkgver".tar.gz
         10-EnvironmentFile.conf
         etcd.env
         tmpfiles.conf)
@@ -29,8 +26,8 @@ sha512sums=('ea332fe99c9bce842dc9919b7cf676db2024adf83c23c37dcd8db48bc2a2d3f9887
 
 build() {
   local _commit
-  _commit=$(bsdcat "$pkgname-$pkgver.tar.gz" | git get-tar-commit-id)
-  cd "$pkgname-$pkgver"
+  _commit=$(bsdcat "$pkgbase-$pkgver.tar.gz" | git get-tar-commit-id)
+  cd "$pkgbase-$pkgver"
   export CGO_ENABLED=1
   export CGO_CPPFLAGS="$CPPFLAGS"
   export CGO_CFLAGS="$CFLAGS"
@@ -56,22 +53,33 @@ build() {
   go build "${_flags[@]}" ./functional/cmd/etcd-{agent,proxy,runner,tester}
 }
 
-package() {
+package_etcd() {
+  pkgdesc='highly-available key value store for shared configuration and service discovery'
+  backup=('etc/conf.d/etcd')
+  provides=('etcdctl')
+  depends=('glibc')
+
   install -Dm644 10-EnvironmentFile.conf -t "$pkgdir"/usr/lib/systemd/system/etcd.service.d
   install -Dm644 etcd.env "$pkgdir"/etc/conf.d/etcd
-  install -Dm644 tmpfiles.conf "$pkgdir"/usr/lib/tmpfiles.d/"$pkgname".conf
+  install -Dm644 tmpfiles.conf "$pkgdir"/usr/lib/tmpfiles.d/"$pkgbase".conf
 
-  cd "$pkgname-$pkgver"
-  install -Dm644 contrib/systemd/sysusers.d/20-etcd.conf "$pkgdir"/usr/lib/sysusers.d/"$pkgname".conf
+  cd "$pkgbase-$pkgver"
+  install -Dm644 contrib/systemd/sysusers.d/20-etcd.conf "$pkgdir"/usr/lib/sysusers.d/"$pkgbase".conf
   install -Dm644 contrib/systemd/etcd.service -t "$pkgdir"/usr/lib/systemd/system
-  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"$pkgname"
-  install -Dm644 "$pkgname".conf.yml.sample -t "$pkgdir"/usr/share/doc/"$pkgname"
-  cp -r Documentation/* -t "$pkgdir"/usr/share/doc/"$pkgname"
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"$pkgbase"
+  install -Dm644 "$pkgbase".conf.yml.sample -t "$pkgdir"/usr/share/doc/"$pkgbase"
+  cp -r Documentation/* -t "$pkgdir"/usr/share/doc/"$pkgbase"
 
   cd bin
   install -Dm755 server "$pkgdir"/usr/bin/etcd
   install -m755 etcd{ctl,utl} -t "$pkgdir"/usr/bin
-  install -Dm755 etcd-dump-{db,logs} bridge benchmark -t "$pkgdir"/usr/lib/"$pkgname"
+}
+
+package_etcd-tools() {
+  pkgdesc='benchmark, testing and debugging tools for etcd'
+  depends=('etcd')
+  cd "$pkgbase-$pkgver"/bin
+  install -Dm755 etcd-dump-{db,logs} bridge benchmark -t "$pkgdir"/usr/lib/"$pkgbase"
   # useful looking tools for testing
-  install -Dm755 etcd-{agent,proxy,runner,tester} -t "$pkgdir"/usr/lib/"$pkgname"/functional
+  install -Dm755 etcd-{agent,proxy,runner,tester} -t "$pkgdir"/usr/lib/"$pkgbase"/functional
 }
