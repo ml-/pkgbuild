@@ -1,0 +1,48 @@
+# Maintainer: ml <>
+# Maintainer: Mario Finelli <mario at finel dot li>
+
+pkgname=go-yq
+pkgver=4.10.0
+pkgrel=1
+pkgdesc='portable command-line YAML processor'
+arch=('aarch64' 'arm' 'armv6h' 'armv7h' 'i686' 'x86_64')
+url='https://github.com/mikefarah/yq'
+license=('MIT')
+depends=('glibc')
+makedepends=('go')
+conflicts=('yq')
+source=("$url"/archive/v"$pkgver"/yq-"$pkgver".tar.gz)
+sha256sums=('69f2f8de1e0c5a2d6e529b471f47c2cfacf072ee751e936fd81d645a09346f30')
+
+build() {
+  local _commit
+  _commit=$(bsdcat yq-"$pkgver".tar.gz | git get-tar-commit-id)
+  cd yq-"$pkgver"
+  export CGO_ENABLED=1
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw'
+
+  go build -ldflags="-linkmode=external -X=main.GitCommit=${_commit:0:7} -X=main.GitDescribe=v$pkgver" -o yq
+  ./yq shell-completion bash >completion.bash
+  ./yq shell-completion zsh >completion.zsh
+  ./yq shell-completion fish >completion.fish
+}
+
+check() {
+  cd yq-"$pkgver"
+  go test ./...
+}
+
+package() {
+  cd yq-"$pkgver"
+  install -Dm0755 yq -t "$pkgdir"/usr/bin
+  install -Dm0644 LICENSE -t "$pkgdir"/usr/share/licenses/"$pkgname"
+  install -Dm0644 README.md -t "$pkgdir"/usr/share/doc/"$pkgname"
+
+  install -Dm0644 completion.bash "$pkgdir"/usr/share/bash-completion/completions/yq
+  install -Dm0644 completion.zsh "$pkgdir"/usr/share/zsh/site-functions/_yq
+  install -Dm0644 completion.fish "$pkgdir"/usr/share/fish/vendor_completions.d/yq.fish
+}
