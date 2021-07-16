@@ -3,13 +3,13 @@
 
 pkgname=go-yq
 pkgver=4.10.0
-pkgrel=1
+pkgrel=2
 pkgdesc='portable command-line YAML processor'
 arch=('aarch64' 'arm' 'armv6h' 'armv7h' 'i686' 'x86_64')
 url='https://github.com/mikefarah/yq'
 license=('MIT')
 depends=('glibc')
-makedepends=('go')
+makedepends=('git' 'go')
 conflicts=('yq')
 source=("$url"/archive/v"$pkgver"/yq-"$pkgver".tar.gz)
 sha256sums=('69f2f8de1e0c5a2d6e529b471f47c2cfacf072ee751e936fd81d645a09346f30')

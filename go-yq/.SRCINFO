@@ -1,7 +1,7 @@
 pkgbase = go-yq
 	pkgdesc = portable command-line YAML processor
 	pkgver = 4.10.0
-	pkgrel = 1
+	pkgrel = 2
 	url = https://github.com/mikefarah/yq
 	arch = aarch64
 	arch = arm
@@ -10,6 +10,7 @@ pkgbase = go-yq
 	arch = i686
 	arch = x86_64
 	license = MIT
+	makedepends = git
 	makedepends = go
 	depends = glibc
 	conflicts = yq
