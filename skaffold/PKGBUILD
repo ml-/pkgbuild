@@ -4,7 +4,7 @@
 # Contributor: Stefan Cocora <stefan dot cocora at gmail dot com>
 
 pkgname=skaffold
-pkgver=1.27.0
+pkgver=1.28.1
 pkgrel=1
 pkgdesc='Easy and Repeatable Kubernetes Development'
 arch=('x86_64')
@@ -17,7 +17,7 @@ optdepends=(
   "helm: Helm Chart deployments"
 )
 source=("https://github.com/GoogleContainerTools/skaffold/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('c82a842d138f75dbab5cbc64f0dda3cce6bfb0c7bba5a6ecfaed0c9799b556b1')
+sha256sums=('4d96d820d48934b3c12415697146ec30318e235f3a35d4fc68024cda30b655ef')
 
 build() {
   _x=(
